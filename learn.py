@@ -6,12 +6,7 @@ import negamax
 import ttable
 import weights
 import evaluator
-
-MAX_ITER_MTD = 100
-MAX_DEPTH = 3
-ALPHA_INIT = 0.01
-ALPHA_DEC_FACTOR = 1.003
-LAMBDA = 0.7
+import config
 
 def main():
 
@@ -20,9 +15,9 @@ def main():
 	#Initialize stuff
 	counter = 0
 	transTable = ttable.ttable()
-	wInit = weights.initPosPnts
-	wFin = weights.finalPosPnts
-	learningRate = ALPHA_INIT
+	wInit = list(weights.initPosPnts)
+	wFin = list(weights.finalPosPnts)
+	learningRate = config.ALPHA_INIT
 
 	while (True):
 		#Read game
@@ -52,7 +47,7 @@ def main():
 		print "\nGame ", counter + 1
 
 		#Initialize stuff
-		scores = [evaluator.MAX_SCORE]
+		scores = [config.MAX_SCORE]
 		boards = []
 		featuresInit = []
 		featuresFinal = []
@@ -67,11 +62,12 @@ def main():
 			if board.turn == color:
 				#transTable.table.clear()
 				#transTable.size = 0
-				#guess = negamax.ABnegamax(board, MAX_DEPTH, 0, -(evaluator.MAX_SCORE), (evaluator.MAX_SCORE), transTable)[1]
-				#guess = negamax.mtd(board, MAX_DEPTH, evaluator.MAX_SCORE, transTable, MAX_ITER_MTD)[1]
-				scores.append(negamax.mtdf(board, MAX_DEPTH, transTable, MAX_ITER_MTD)[1])
-				boards.append(chess.Board(transTable.table[board.zobrist_hash()].finalBoardPos))
-				fI, fF = evaluator.findFeatures(board, color)
+				#guess = negamax.ABnegamax(board, config.MAX_DEPTH, 0, -(config.MAX_SCORE), (config.MAX_SCORE), transTable)[1]
+				#guess = negamax.mtd(board, config.MAX_DEPTH, config.MAX_SCORE, transTable, config.MAX_ITER_MTD)[1]
+				scores.append(negamax.mtdf(board, config.MAX_DEPTH, transTable, config.MAX_ITER_MTD)[1])
+				finalBoardPos = chess.Board(transTable.table[board.zobrist_hash()].finalBoardPos)
+				boards.append(finalBoardPos)
+				fI, fF = evaluator.findFeatures(finalBoardPos, color)
 				featuresInit.append(fI)
 				featuresFinal.append(fF)
 
@@ -86,12 +82,15 @@ def main():
 		featuresFinal.reverse()
 
 		#Learn piece square tables
-		wInit, wFin = learn(wInit, wFin, featuresInit, featuresFinal, scores, learningRate, LAMBDA)
-		learningRate /= ALPHA_DEC_FACTOR
+		wInit, wFin = learn(wInit, wFin, featuresInit, featuresFinal, scores, learningRate, config.LAMBDA)
+		learningRate /= config.ALPHA_DEC_FACTOR
 		#Write piece square tables to file
 		f = open("weights.py", "w")
 		f.write("initPosPnts = " + str(wInit) + "\nfinalPosPnts = " + str(wFin))
 		f.close()
+		#Update piece square tables in memory
+		weights.initPosPnts = list(wInit)
+		weights.finalPosPnts = list(wFin)
 
 		#Debug info
 		"""print scores
@@ -102,16 +101,18 @@ def main():
 		print transTable.size
 		#print wInit"""
 		counter = counter + 1
-		if counter == 50:
+		if counter == config.MAX_GAMES:
 			break
 	games.close()
 
 def initializeWeights():
-	initPosPnts = [[[1 for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
-	finalPosPnts = [[[1 for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
+	initPosPnts = [[[0 for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
+	finalPosPnts = [[[0 for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
 	f = open("weights.py", "w")
 	f.write("initPosPnts = " + str(initPosPnts) + "\nfinalPosPnts = " + str(finalPosPnts))
 	f.close()
+	weights.initPosPnts = initPosPnts
+	weights.finalPosPnts = finalPosPnts
 
 def learn(wRawInit, wRawFin, fInit, fFinal, J, alpha, lambdaDecay):
 	wInit = []
@@ -147,5 +148,5 @@ def learn(wRawInit, wRawFin, fInit, fFinal, J, alpha, lambdaDecay):
 	#return final weights
 	return (wRawInit, wRawFin)
 
-
+initializeWeights()
 main()
