@@ -1,6 +1,7 @@
 import chess
 import evaluator
 import ttable
+import config
 
 def ABnegamax(board, maxDepth, depth, alpha, beta, transTable):
 	alphaOriginal = alpha
@@ -40,20 +41,10 @@ def ABnegamax(board, maxDepth, depth, alpha, beta, transTable):
 	maxScore = -(1<<128)
 	score = maxScore
 	bestMove = ''
-	#moves = []
-
-	#for move in board.legal_moves:
-	#	board.push(move)
-	#	moves.append((move, evaluator.evaluator(board, board.result())))
-	#	board.pop()
-
-	#moves.sort(key = lambda move: move[1])
 
 	for move in board.legal_moves:
-		#move = movePair[0]
 		board.push(move)
 		score = -ABnegamax(board, maxDepth, depth + 1, -beta, -max(maxScore, alpha), transTable)[1]
-		#score = -score
 		board.pop()
 
 		if score > maxScore:
@@ -154,8 +145,8 @@ def mtd(board, maxDepth, guess, transTable, maxIter):
 
 """def mtd(board, maxDepth, guess, transTable, maxIter):
 	gamma = 0
-	upperBound = evaluator.MAX_SCORE
-	lowerBound = -(evaluator.MAX_SCORE)
+	upperBound = config.MAX_SCORE
+	lowerBound = -(config.MAX_SCORE)
 	while lowerBound < upperBound:
 		gamma = max(guess, lowerBound + 1)
 		(move, guess) = negamax(board, maxDepth, 0, gamma - 1, transTable)

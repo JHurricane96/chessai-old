@@ -1,3 +1,6 @@
+import config
+
+# Used for ABnegamax
 """class ttableEntry:
 	zobristHash = 0L
 	scoreType = 0 #0 accurate; 1 lower bound; 2 upper bound
@@ -5,16 +8,17 @@
 	bestMove = None
 	depth = 0 #From bottom
 	result = ''"""
-MAX_SCORE = 10000
 
+# Used for gamma negamax
 class ttableEntry:
 	zobristHash = 0L
-	minScore = -(MAX_SCORE)
-	maxScore = MAX_SCORE
+	minScore = -config.MAX_SCORE
+	maxScore = config.MAX_SCORE
 	bestMove = None
-	finalBoardPos = None
+	finalBoardPos = None # Only useful for learning to find features. 
+	# TODO: implement separate trans-tables for learning and playing
 	depth = 0 #From bottom
-	result = ''""
+	result = ''
 
 class ttable:
 	table = {}
