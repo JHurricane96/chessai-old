@@ -17,5 +17,6 @@ Building
 4. Run `virtualenv -p <pypy location here> <virtual environment name here>` to set up your virtual environment.
 5. Run `source <name of env>/bin/activate` to activate your virtual environment.
 6. Run `pip install python-chess` to install the python-chess library.
-7. Run `pypy learn.py` to learn. It takes a couple of days to learn from around 10000 games.
-8. Run `pypy main.py` to play against the AI.
+7. Extract GMallboth.pgn.zip to GMallboth.pgn.
+8. Run `pypy learn.py` to learn. It takes a couple of days to learn from around 10000 games.
+9. Run `pypy main.py` to play against the AI.
