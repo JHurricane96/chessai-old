@@ -34,8 +34,8 @@ def evaluator(board, result):
 				endPnts += weights.finalPosPnts[piece.piece_type - 1][i]
 			else:
 				matPnts -= materialPnts[piece.piece_type - 1]
-				initPnts += weights.initPosPnts[piece.piece_type - 1][63 - i]
-				endPnts += weights.finalPosPnts[piece.piece_type - 1][63 - i]
+				initPnts -= weights.initPosPnts[piece.piece_type - 1][63 - i]
+				endPnts -= weights.finalPosPnts[piece.piece_type - 1][63 - i]
 
 
 	phase = (phase * 256 + (totalPhase / 2)) / totalPhase
@@ -66,11 +66,11 @@ def findFeatures(board, color):
 		piece = board.piece_at(i)
 		if piece:
 			if piece.color:
-				featuresRawInit[piece.piece_type - 1][i] = (256.0 - phase) / 256.0 * colorType
-				featuresRawFin[piece.piece_type - 1][i] = phase / 256.0 * colorType
+				featuresRawInit[piece.piece_type - 1][i] += (256.0 - phase) / 256.0 * colorType
+				featuresRawFin[piece.piece_type - 1][i] += phase / 256.0 * colorType
 			else:
-				featuresRawInit[piece.piece_type - 1][63 - i] = (256.0 - phase) / 256.0 * colorType
-				featuresRawFin[piece.piece_type - 1][63 - i] = phase / 256.0 * colorType
+				featuresRawInit[piece.piece_type - 1][63 - i] -= (256.0 - phase) / 256.0 * colorType
+				featuresRawFin[piece.piece_type - 1][63 - i] -= phase / 256.0 * colorType
 
 	for j in range(6):
 		for i in range(64):
