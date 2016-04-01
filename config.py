@@ -1,6 +1,8 @@
 MAX_ITER_MTD = 100 # Maximum number of iterations in MTD
 MAX_DEPTH = 4 # Maximum depth of negamax
-MAX_SCORE = 1000 # Maximum score that is awarded in static evaluation
+PAWN_SCORE = 100 # Material score of a single pawn
+MAX_POSITION_SCORE = PAWN_SCORE / 2 # Maximum score awarded in piece square tables
+MAX_SCORE = PAWN_SCORE * 100 # Maximum score that is awarded in static evaluation
 
 ALPHA_INIT = 0.002 # Initial learning rate
 ALPHA_DEC_FACTOR = 1.0001 # Learning rate gets divided by this after every game

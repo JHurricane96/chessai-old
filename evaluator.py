@@ -2,7 +2,11 @@ import chess
 import weights
 import config
 
-materialPnts = [[-10, -40, -41, -60, -120, 0], [10, 40, 41, 60, 120, 0]]
+pawnScore = config.PAWN_SCORE
+materialPnts = [
+	[-pawnScore, -4 * pawnScore, int(round(-4.1 * pawnScore)), -6 * pawnScore, -12 * pawnScore, 0],
+	[pawnScore, 4 * pawnScore, int(round(4.1 * pawnScore)), 6 * pawnScore, 12 * pawnScore, 0]
+]
 phasePnts = [0, 1, 1, 2, 4, 0]
 
 def evaluator(board, result):
