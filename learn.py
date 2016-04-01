@@ -93,7 +93,7 @@ def main():
 			featuresFinal.reverse()
 
 			#Learn piece square tables
-			wInit, wFin = learn(wInit, wFin, featuresInit, featuresFinal, scores, learningRate, config.LAMBDA)
+			wInit, wFin = learn(wInit, wFin, featuresInit, featuresFinal, scores, learningRate, config.LAMBDA, config.MAX_POSITION_SCORE)
 			learningRate /= config.ALPHA_DEC_FACTOR
 			#Write piece square tables to file
 			f = open("weights.py", "w")
@@ -126,7 +126,7 @@ def initializeWeights():
 	weights.initPosPnts = initPosPnts
 	weights.finalPosPnts = finalPosPnts
 
-def learn(wRawInit, wRawFin, fInit, fFinal, J, alpha, lambdaDecay):
+def learn(wRawInit, wRawFin, fInit, fFinal, J, alpha, lambdaDecay, clampVal):
 	wInit = []
 	wFin = []
 	sizeJ = len(J)
@@ -154,8 +154,8 @@ def learn(wRawInit, wRawFin, fInit, fFinal, J, alpha, lambdaDecay):
 		wFin[i] += alpha * updateMagFinal[i]
 
 	#rolling parameter vector
-	wRawInit = [[[int(round(wInit[i + 64*j + 64*6*k])) for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
-	wRawFin = [[[int(round(wFin[i + 64*j + 64*6*k])) for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
+	wRawInit = [[[max(min(int(round(wInit[i + 64*j + 64*6*k])), clampVal), -clampVal) for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
+	wRawFin = [[[max(min(int(round(wFin[i + 64*j + 64*6*k])), clampVal), -clampVal) for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
 
 	#return final weights
 	return (wRawInit, wRawFin)
