@@ -3,10 +3,7 @@ import weights
 import config
 
 pawnScore = config.PAWN_SCORE
-materialPnts = [
-	[-pawnScore, -4 * pawnScore, int(round(-4.1 * pawnScore)), -6 * pawnScore, -12 * pawnScore, 0],
-	[pawnScore, 4 * pawnScore, int(round(4.1 * pawnScore)), 6 * pawnScore, 12 * pawnScore, 0]
-]
+materialPnts = [pawnScore, 4 * pawnScore, int(round(4.1 * pawnScore)), 6 * pawnScore, 12 * pawnScore, 0]
 phasePnts = [0, 1, 1, 2, 4, 0]
 
 def evaluator(board, result):
@@ -30,10 +27,16 @@ def evaluator(board, result):
 	for i in xrange(0, 64):
 		piece = board.piece_at(i)
 		if piece:
-			matPnts += materialPnts[int(piece.color)][piece.piece_type - 1]
-			initPnts += weights.initPosPnts[int(piece.color)][piece.piece_type - 1][i]
-			endPnts += weights.finalPosPnts[int(piece.color)][piece.piece_type - 1][i]
 			phase -= phasePnts[piece.piece_type - 1]
+			if piece.color:
+				matPnts += materialPnts[piece.piece_type - 1]
+				initPnts += weights.initPosPnts[piece.piece_type - 1][i]
+				endPnts += weights.finalPosPnts[piece.piece_type - 1][i]
+			else:
+				matPnts -= materialPnts[piece.piece_type - 1]
+				initPnts += weights.initPosPnts[piece.piece_type - 1][63 - i]
+				endPnts += weights.finalPosPnts[piece.piece_type - 1][63 - i]
+
 
 	phase = (phase * 256 + (totalPhase / 2)) / totalPhase
 	#pnts = (((matPnts + initPnts) * (256 - phase)) + ((matPnts + endPnts) * phase)) / 256
@@ -45,8 +48,8 @@ def evaluator(board, result):
 
 def findFeatures(board, color):
 
-	featuresRawInit = [[[0 for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
-	featuresRawFin = [[[0 for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
+	featuresRawInit = [[0 for i in range (0, 64)] for j in range (0, 6)]
+	featuresRawFin = [[0 for i in range (0, 64)] for j in range (0, 6)]
 	featuresInit = []
 	featuresFin = []
 	colorType = 1 if color else -1
@@ -62,13 +65,16 @@ def findFeatures(board, color):
 	for i in xrange(0, 64):
 		piece = board.piece_at(i)
 		if piece:
-			featuresRawInit[int(piece.color)][piece.piece_type - 1][i] = (256.0 - phase) / 256.0 * colorType
-			featuresRawFin[int(piece.color)][piece.piece_type - 1][i] = phase / 256.0 * colorType
+			if piece.color:
+				featuresRawInit[piece.piece_type - 1][i] = (256.0 - phase) / 256.0 * colorType
+				featuresRawFin[piece.piece_type - 1][i] = phase / 256.0 * colorType
+			else:
+				featuresRawInit[piece.piece_type - 1][63 - i] = (256.0 - phase) / 256.0 * colorType
+				featuresRawFin[piece.piece_type - 1][63 - i] = phase / 256.0 * colorType
 
-	for k in range(2):
-		for j in range(6):
-			for i in range(64):
-				featuresInit.append(featuresRawInit[k][j][i])
-				featuresFin.append(featuresRawFin[k][j][i])
+	for j in range(6):
+		for i in range(64):
+			featuresInit.append(featuresRawInit[j][i])
+			featuresFin.append(featuresRawFin[j][i])
 
 	return (featuresInit, featuresFin)

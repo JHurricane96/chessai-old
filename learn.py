@@ -118,8 +118,8 @@ def main():
 	games.close()
 
 def initializeWeights():
-	initPosPnts = [[[0 for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
-	finalPosPnts = [[[0 for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
+	initPosPnts = [[0 for i in range (0, 64)] for j in range (0, 6)]
+	finalPosPnts = [[0 for i in range (0, 64)] for j in range (0, 6)]
 	f = open("weights.py", "w")
 	f.write("initPosPnts = " + str(initPosPnts) + "\nfinalPosPnts = " + str(finalPosPnts))
 	f.close()
@@ -132,11 +132,10 @@ def learn(wRawInit, wRawFin, fInit, fFinal, J, alpha, lambdaDecay, clampVal):
 	sizeJ = len(J)
 
 	#unrolling parameters into vector
-	for k in range(2):
-		for j in range(6):
-			for i in range(64):
-				wInit.append(wRawInit[k][j][i])
-				wFin.append(wRawFin[k][j][i])
+	for j in range(6):
+		for i in range(64):
+			wInit.append(wRawInit[j][i])
+			wFin.append(wRawFin[j][i])
 	sizeW = len(wInit)
 
 	#calculate update amount (with sign) for parameters	
@@ -154,8 +153,8 @@ def learn(wRawInit, wRawFin, fInit, fFinal, J, alpha, lambdaDecay, clampVal):
 		wFin[i] += alpha * updateMagFinal[i]
 
 	#rolling parameter vector
-	wRawInit = [[[max(min(int(round(wInit[i + 64*j + 64*6*k])), clampVal), -clampVal) for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
-	wRawFin = [[[max(min(int(round(wFin[i + 64*j + 64*6*k])), clampVal), -clampVal) for i in range (0, 64)] for j in range (0, 6)] for k in range (0, 2)]
+	wRawInit = [[max(min(int(round(wInit[i + 64*j])), clampVal), -clampVal) for i in range (0, 64)] for j in range (0, 6)]
+	wRawFin = [[max(min(int(round(wFin[i + 64*j])), clampVal), -clampVal) for i in range (0, 64)] for j in range (0, 6)]
 
 	#return final weights
 	return (wRawInit, wRawFin)
