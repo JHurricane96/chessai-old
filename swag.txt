@@ -1,0 +1,45 @@
+c4d5
+r n b q k b n r
+p . p p p p . p
+. p . . . . p .
+. . . B . . . .
+. . . . P . . .
+. . . . . . . .
+P P P P . P P P
+R N B Q K . N R
+c7c6
+r n b q k b n r
+p . . p p p . p
+. p p . . . p .
+. . . B . . . .
+. . . . P . . .
+. . . . . . . .
+P P P P . P P P
+R N B Q K . N R
+d5b3
+r n b q k b n r
+p . . p p p . p
+. p p . . . p .
+. . . . . . . .
+. . . . P . . .
+. B . . . . . .
+P P P P . P P P
+R N B Q K . N R
+d7d5
+r n b q k b n r
+p . . . p p . p
+. p p . . . p .
+. . . p . . . .
+. . . . P . . .
+. B . . . . . .
+P P P P . P P P
+R N B Q K . N R
+b3d5
+r n b q k b n r
+p . . . p p . p
+. p p . . . p .
+. . . B . . . .
+. . . . P . . .
+. . . . . . . .
+P P P P . P P P
+R N B Q K . N R

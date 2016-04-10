@@ -3,7 +3,7 @@ import ttable
 import negamax
 
 MAX_ITER_MTD = 100
-MAX_DEPTH = 4
+MAX_DEPTH = 5
 
 def main():
 	board = chess.Board()
@@ -15,14 +15,26 @@ def main():
 		if board.is_game_over():
 			break
 
-		#move = negamax.negamax(board, MAX_DEPTH, 0, -(1<<32), (1<<32), transTable)[0]
+		#move = negamax.ABnegamax(board, MAX_DEPTH, 0, -(1<<32), (1<<32), transTable)[0]
 		#transTable.table.clear()
 		#transTable.size = 0
 		#move = negamax.mtd(board, MAX_DEPTH, 1<<32, transTable, MAX_ITER_MTD)[0]
 		move = negamax.mtdf(board, MAX_DEPTH, transTable, MAX_ITER_MTD)[0]
 		print move.uci()
 		board.push(move)
+		b = board.copy()
+		f = open("swag.txt", "w")
+		f.write(str(move) + "\n")
+		f.write(str(b) + "\n")
+		for i in xrange(MAX_DEPTH - 1):
+			mv = transTable.table[b.zobrist_hash()].move
+			f.write(mv.uci() + "\n")
+			b.push(mv)
+			f.write(str(b) + "\n")
+		f.close()
+
 		print board
+		print board.fen()
 
 		if board.is_game_over():
 			break
@@ -39,5 +51,6 @@ def main():
 				rawMove = ""
 		board.push(move)
 		print board
+		print board.fen()
 
 main()
