@@ -31,6 +31,7 @@ def ABnegamax(board, maxDepth, depth, alpha, beta, transTable):
 	#result = board.result()
 	if (depth == maxDepth or entry.result != "*"):
 		entry.score = evaluator.evaluator(board, entry.result)
+		entry.finalBoardPos = board.fen()
 		if (transTable.size == transTable.maxSize and newEntry):
 			transTable.table.popitem()
 			transTable.size = transTable.size - 1
@@ -40,18 +41,19 @@ def ABnegamax(board, maxDepth, depth, alpha, beta, transTable):
 
 	maxScore = -(1<<128)
 	score = maxScore
-	bestMove = ''
+	bestMove = None
 
 	for move in board.legal_moves:
 		board.push(move)
-		score = -ABnegamax(board, maxDepth, depth + 1, -beta, -max(maxScore, alpha), transTable)[1]
+		score = -ABnegamax(board, maxDepth, depth + 1, -beta, -alpha, transTable)[1]
 		board.pop()
 
 		if score > maxScore:
 			maxScore = score
 			bestMove = move
 
-		if maxScore >= beta:
+		alpha = max(alpha, score)
+		if alpha >= beta:
 			break
 
 	entry.score = maxScore
@@ -65,6 +67,9 @@ def ABnegamax(board, maxDepth, depth, alpha, beta, transTable):
 	if (transTable.size == transTable.maxSize and newEntry):
 		transTable.table.popitem()
 		transTable.size = transTable.size - 1
+	board.push(bestMove)
+	entry.finalBoardPos = transTable.table[board.zobrist_hash()].finalBoardPos
+	board.pop()
 	transTable.table[entry.zobristHash] = entry
 	transTable.size = transTable.size + 1
 	return (bestMove, maxScore)
@@ -131,30 +136,34 @@ def negamax(board, maxDepth, depth, gamma, transTable):
 	return (bestMove, maxScore)
 
 
-def mtd(board, maxDepth, guess, transTable, maxIter):
+"""def mtd(board, maxDepth, guess, transTable, maxIter):
 	gamma = 0
 	move = None
 	for i in xrange(maxIter):
 		gamma = guess
-		(move, guess) = negamax(board, maxDepth, 0, gamma - 1, transTable)
-		#(move, guess) = ABnegamax(board, maxDepth, 0, gamma - 1, gamma, transTable)
+		#(move, guess) = negamax(board, maxDepth, 0, gamma - 1, transTable)
+		(move, guess) = ABnegamax(board, maxDepth, 0, gamma - 1, gamma, transTable)
 		if gamma == guess:
 			#print i,
 			break
-	return (move, guess)
+	return (move, guess)"""
 
-"""def mtd(board, maxDepth, guess, transTable, maxIter):
-	gamma = 0
+def mtd(board, maxDepth, firstGuess, transTable, maxIter):
+	guess = firstGuess
 	upperBound = config.MAX_SCORE
 	lowerBound = -(config.MAX_SCORE)
 	while lowerBound < upperBound:
-		gamma = max(guess, lowerBound + 1)
-		(move, guess) = negamax(board, maxDepth, 0, gamma - 1, transTable)
+		#gamma = max(guess, lowerBound + 1)
+		if guess == lowerBound:
+			gamma = guess + 1
+		else:
+			gamma = guess
+		(move, guess) = ABnegamax(board, maxDepth, 0, gamma - 1, gamma, transTable)
 		if guess < gamma:
 			upperBound = guess
 		else:
 			lowerBound = guess
-	return (move, guess)"""
+	return (move, guess)
 
 def mtdf(board, maxDepth, transTable, maxIter):
 	guess1 = 1<<128
