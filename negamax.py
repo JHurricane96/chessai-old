@@ -26,7 +26,7 @@ def ABnegamax(board, maxDepth, depth, alpha, beta, transTable):
 		newEntry = True
 		entry.result = board.result()
 	entry.depth = maxDepth - depth
-	entry.move = ''
+	entry.move = None
 
 	#result = board.result()
 	if (depth == maxDepth or entry.result != "*"):
@@ -152,7 +152,8 @@ def mtd(board, maxDepth, firstGuess, transTable, maxIter):
 	guess = firstGuess
 	upperBound = config.MAX_SCORE
 	lowerBound = -(config.MAX_SCORE)
-	while lowerBound < upperBound:
+	i = 0
+	while lowerBound < upperBound and i < maxIter:
 		#gamma = max(guess, lowerBound + 1)
 		if guess == lowerBound:
 			gamma = guess + 1
@@ -163,6 +164,7 @@ def mtd(board, maxDepth, firstGuess, transTable, maxIter):
 			upperBound = guess
 		else:
 			lowerBound = guess
+		i = i + 1
 	return (move, guess)
 
 def mtdf(board, maxDepth, transTable, maxIter):
