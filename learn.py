@@ -139,7 +139,8 @@ def learn(wRawInit, wRawFin, fInit, fFinal, J, alpha, lambdaDecay, clampVal):
 	sizeW = len(wInit)
 
 	#calculate update amount (with sign) for parameters	
-	updateMagInit = updateMagFinal = [0 for i in range(sizeW)]
+	updateMagInit = [0 for i in range(sizeW)]
+	updateMagFinal = [0 for i in range(sizeW)]
 	for t in range(sizeJ - 1):
 		propTempDiff = 0 #propagated temporal difference
 		for j in range(t, sizeJ - 1):
